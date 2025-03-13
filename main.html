@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Proyecto Planta - FES Acatlán (Versión Azul)</title>
+  <style>
+    /* RESET */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* FUENTE Y CUERPO */
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f7f7f7;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ENCABEZADO (AZUL) */
+    header {
+      background-color: #0B2851; /* Azul FES */
+      padding: 10px 20px;
+      position: relative;
+      z-index: 1000;
+    }
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+    }
+    .header-content h1 {
+      font-size: 1.3rem;
+      line-height: 1.3;
+    }
+
+    /* SIDEBAR (BARRA LATERAL) - AZUL */
+    .sidebar {
+      position: fixed;
+      top: 60px; /* Debajo del encabezado */
+      left: 0;
+      width: 260px;
+      height: calc(100% - 60px);
+      background-color: #0B2851; /* Azul FES */
+      box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+      z-index: 999;
+      transform: translateX(-260px);
+      transition: transform 0.5s ease;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .sidebar h2 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #fff;
+    }
+    .sidebar a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      margin-bottom: 10px;
+      transition: color 0.3s;
+    }
+    .sidebar a:hover {
+      color: #f0f0f0;
+    }
+    .sidebar.open {
+      transform: translateX(0);
+    }
+
+    /* BOTÓN HAMBURGUESA */
+    .menu-toggle {
+      position: fixed;
+      top: 70px; /* justo debajo del header */
+      left: 20px;
+      z-index: 1000;
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .menu-toggle span {
+      display: block;
+      width: 100%;
+      height: 4px;
+      background-color: #fff; /* Barras en color blanco */
+      border-radius: 2px;
+      transition: background-color 0.3s;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .container {
+      flex: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      margin-top: 70px; /* Espacio para el header */
+    }
+
+    /* SECCIONES (cada 'página') */
+    section {
+      display: none; /* Se ocultan por defecto */
+      margin-bottom: 20px;
+    }
+
+    /* HERO: CUADRO AZUL PEQUEÑO, BORDE REDONDEADO */
+    .hero {
+      background-color: #0B2851; /* Azul */
+      color: #fff;
+      text-align: center;
+      padding: 40px 20px;
+      border-bottom: 2px solid rgba(255,255,255,0.2);
+      max-width: 1000px;
+      margin: 0 auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .hero h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* CONTENIDO DE CADA SECCIÓN */
+    .section-content {
+      max-width: 1000px;
+      margin: 20px auto 0 auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    .section-content h2 {
+      margin-bottom: 10px;
+      font-size: 1.6rem;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 5px;
+      margin-top: 10px;
+      color: #333;
+    }
+    .section-content p {
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+    .section-content img, .section-content iframe {
+      display: block;
+      max-width: 100%;
+      margin: 10px auto;
+      border-radius: 5px;
+    }
+
+    /* FOOTER AMARILLO */
+    footer.footer-main {
+      background-color: #af8f33;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+    }
+    footer.footer-main .links {
+      margin: 10px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    footer.footer-main a {
+      color: #fff;
+      text-decoration: none;
+      border: 1px solid #fff;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+      font-size: 0.9rem;
+    }
+    footer.footer-main a:hover {
+      background-color: #f0f0f0;
+      color: #0B2851;
+      border-color: #f0f0f0;
+    }
+    footer.footer-main p {
+      margin: 5px 0;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <!-- ENCABEZADO AZUL -->
+  <header>
+    <div class="header-content">
+      <h1>Universidad Nacional Autónoma de México<br>Facultad de Estudios Superiores Acatlán</h1>
+      <div class="fescudo">
+        <!-- Logos si se desea -->
+      </div>
+    </div>
+  </header>
+
+  <!-- BOTÓN HAMBURGUESA -->
+  <div class="menu-toggle" id="menuToggle">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <!-- SIDEBAR AZUL -->
+  <aside class="sidebar" id="sidebar">
+    <h2 style="margin-left: 50px;">Secciones</h2>
+    <a href="#" onclick="showSection('inicio')">Inicio</a>
+    <a href="#" onclick="showSection('informacion')">Información</a>
+    <a href="#" onclick="showSection('funcionamiento')">Funcionamiento</a>
+    <a href="#" onclick="showSection('impacto')">Impacto y Beneficios</a>
+    <a href="#" onclick="showSection('sobre')">Sobre la Planta</a>
+  </aside>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <div class="container">
+    <!-- SECCIÓN: INICIO -->
+    <section id="inicio">
+      <div class="hero">
+        <h1>Proyecto de Planta</h1>
+        <p>Bienvenido a la página principal de nuestro proyecto de planta.</p>
+      </div>
+      <div class="section-content">
+        <h2>Inicio</h2>
+        <p>
+          Este proyecto tiene como objetivo optimizar el uso de recursos hídricos y reducir el impacto ambiental
+          en la FES Acatlán. Aquí encontrarás detalles sobre la planta, sus procesos y beneficios.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: INFORMACIÓN -->
+    <section id="informacion">
+      <div class="hero">
+        <h1>Información</h1>
+        <p>Datos y detalles sobre la planta.</p>
+      </div>
+      <div class="section-content">
+        <h2>Descripción de la Planta</h2>
+        <p>
+          Con la operación de la PTAR hay una disminución considerable de contaminantes desalojados al drenaje
+          municipal de Naucalpan, señala investigación realizada en la Facultad.
+        </p>
+        <p>
+          Ante la gran escasez de agua en todo el país y, principalmente en el municipio de Naucalpan, la FES Acatlán
+          tiene un manejo sustentable del agua al contar con un pozo en sus instalaciones que cubre los requerimientos
+          del vital líquido y también por la operación de la Planta de Tratamiento de Aguas Residuales (PTAR) que
+          retiene un considerable porcentaje de carbohidratos y proteínas de la materia orgánica, disminuyendo así
+          el volumen de aguas residuales vertidas al drenaje del municipio.
+        </p>
+        <p>
+          La PTAR forma parte de una investigación de la FES Acatlán; en 2018 se concluyó la red de riego para las zonas
+          verdes del área deportiva del campus. Después de Ciudad Universitaria, Acatlán es la primera entidad de la
+          UNAM dotada con este tipo de instalaciones para el uso, operación e investigaciones.
+        </p>
+        <p>
+          Video de la planta:
+          <a href="https://www.youtube.com/watch?v=GkdVabBzKfM&t=4s" target="_blank">Ver video</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: FUNCIONAMIENTO -->
+    <section id="funcionamiento">
+      <div class="hero">
+        <h1>Funcionamiento</h1>
+        <p>Procesos y tecnologías de la planta.</p>
+      </div>
+      <div class="section-content">
+        <h2>Sistemas y Proceso Biológico</h2>
+        <p>
+          El doctor Omar Reyes Martínez, encargado del área, destacó que Acatlán cuenta con su propio suministro
+          de agua para sus 30 hectáreas con un pozo de absorción de agua potable, equipado con una bomba sumergible
+          de 50 caballos de fuerza a 120 metros de profundidad, que abastece la cisterna principal con capacidad
+          de millón y medio de litros.
+        </p>
+        <p>
+          Además, la PTAR desaloja sus aguas residuales tratadas al drenaje operado por OAPAS Naucalpan, disminuyendo
+          la cantidad de agua residual vertida al drenaje municipal. Importante es el tratamiento biológico,
+          pues significa que la FES Acatlán vierte agua residual tratada.
+        </p>
+        <p>
+          Respecto a los sistemas biológicos en los reactores, fundamentales para el funcionamiento de la PTAR,
+          se forman por seres vivos anaerobios (que no necesitan oxígeno para la degradación de la materia orgánica)
+          y aerobios (que sin oxígeno perecen). Todos juntos se conocen como lodos anaerobios o aerobios.
+        </p>
+        <p>
+          La PTAR cuenta con un reactor anaerobio de manto de lodos de flujo ascendente (UASB) con capacidad
+          de 180 m³ y un reactor aerobio de 100 m³ donde se deposita un sistema de lodos activados, tipo más usado
+          en plantas de tratamiento en México.
+        </p>
+        <h2>Demanda Química de Oxígeno (DBO)</h2>
+        <p>
+          El agua ingresa a la planta de tratamiento con valores de 700-800 mg/l de DBO, después del proceso biológico
+          con lodos sale con 50-60 mg/l. Para uso en riegos, la normatividad señala máximo 20 mg/l y en Acatlán
+          se alcanzan valores de 8 a 15 mg/l.
+        </p>
+        <p>
+          Por el número de bombas y la cantidad de alimento requerido por los sistemas biológicos, la PTAR maneja
+          entre 2.5 y 3.5 litros de agua por segundo. La cisterna de agua residual tratada tiene capacidad
+          de 65 mil litros.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: IMPACTO Y BENEFICIOS -->
+    <section id="impacto">
+      <div class="hero">
+        <h1>Impacto y Beneficios</h1>
+        <p>Resultados y mejoras obtenidas.</p>
+      </div>
+      <div class="section-content">
+        <h2>Casos de Éxito en la FES</h2>
+        <p>
+          La planta de Acatlán es piloto, diseñada en un espacio mínimo pero potente al contar con tecnología de punta,
+          dos patentes y un sistema de control de motores. Dificilmente se encuentra otra igual en todo el país.
+        </p>
+        <p>
+          Con esta operación se reduce de manera significativa el vertido de contaminantes al drenaje de Naucalpan,
+          contribuyendo a abatir la contaminación ambiental en la zona. Se estima que el consumo de agua y energía
+          se ha reducido en un 40% en comparación con períodos anteriores.
+        </p>
+        <h3>Parque Naucalli</h3>
+        <p>
+          La planta de tratamiento más cercana a la FES Acatlán se localiza a 3.9 km en el Parque Naucalli, también
+          de tipo lodos activados, aunque de mayor extensión. La de Acatlán, pese a su tamaño reducido, destaca
+          por su innovación y eficacia.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: SOBRE LA PLANTA -->
+    <section id="sobre">
+      <div class="hero">
+        <h1>Sobre la Planta</h1>
+        <p>Historia, beneficios ambientales y ubicación.</p>
+      </div>
+      <div class="section-content">
+        <h2>Historia</h2>
+        <p>
+          La idea surgió de un proyecto de investigación interdisciplinario enfocado en la sustentabilidad.
+          En 2018, se concluyó la red de riego para las zonas verdes del área deportiva del campus, convirtiendo
+          a Acatlán en la primera entidad de la UNAM con este tipo de instalaciones para uso, operación e investigaciones.
+        </p>
+        <h3>Beneficios Ambientales</h3>
+        <p>
+          El agua residual tratada en Acatlán disminuye el impacto ambiental, despojando a las aguas de contaminantes
+          cuyo destino final es el drenaje municipal. Además, contribuye a la reducción de emisiones de CO<sub>2</sub>,
+          optimiza el uso de agua y promueve la cultura del reciclaje.
+        </p>
+        <h3>Ubicación</h3>
+        <p>
+          Se encuentra en la zona noroeste de la FES Acatlán; próximamente se implementará un mapa interactivo para
+          facilitar su localización.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <!-- FOOTER AMARILLO -->
+  <footer class="footer-main">
+    <div class="links">
+      <a href="#">Créditos</a>
+      <a href="#">Conoce el portal</a>
+      <a href="#">Mapa del sitio</a>
+      <a href="#">Preguntas frecuentes</a>
+      <a href="#">Normatividad</a>
+    </div>
+    <p>Hecho en México, todos los derechos reservados 2025.</p>
+    <p>Esta página puede ser reproducida con fines no lucrativos, siempre y cuando se cite la fuente completa y su dirección electrónica.</p>
+    <p>Requiere permiso previo por escrito para usos no autorizados.</p>
+    <p>Sitio web administrado por: Facultad de Estudios Superiores Acatlán.</p>
+  </footer>
+
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.getElementById('menuToggle');
+    const sections = document.querySelectorAll('section');
+
+    // Mostrar la sección "inicio" al cargar la página
+    window.onload = () => {
+      showSection('inicio');
+    };
+
+    // Expandir/colapsar la barra lateral al hacer clic en el botón hamburguesa
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    // Función para mostrar solo la sección con el ID especificado
+    function showSection(sectionId) {
+      sections.forEach(sec => {
+        sec.style.display = (sec.id === sectionId) ? 'block' : 'none';
+      });
+      // Cerrar el sidebar en pantallas pequeñas
+      sidebar.classList.remove('open');
+    }
+  </script>
+</body>
+</html>
